@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Tour-CRUD</string>
+    <string-array name="vehicle_types">
+        <item>Xe máy</item>
+        <item>Ô tô</item>
+        <item>Máy bay</item>
+    </string-array>
+</resources>
