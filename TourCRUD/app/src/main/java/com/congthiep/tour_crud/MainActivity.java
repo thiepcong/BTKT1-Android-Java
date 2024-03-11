@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
         to = findViewById(R.id.editTextTo);
         duration = findViewById(R.id.editTextDuration);
         search = findViewById(R.id.searchEditText);
+        buttonUpdate.setBackgroundColor(Color.parseColor("#FFc1c1c1"));
+        buttonUpdate.setTextColor(Color.parseColor("#FF7a7a7a"));
+        buttonAdd.setBackgroundColor(Color.parseColor("#FF221a4c"));
+        buttonAdd.setTextColor(Color.parseColor("#FFFFFFFF"));
+
 
         VehicleAdapter adapter = new VehicleAdapter(this, vehicles);
         spinnerVehicle.setAdapter(adapter);
@@ -116,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!isAddOrUpdate) return;
+                disableKeyBoard();
                 String fromText = from.getText().toString();
                 String toText = to.getText().toString();
                 String durationText = duration.getText().toString();
@@ -156,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(isAddOrUpdate) return;
+                disableKeyBoard();
                 String fromText = from.getText().toString();
                 String toText = to.getText().toString();
                 String durationText = duration.getText().toString();
@@ -169,7 +178,8 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     tourList.set(updateCurrentIndex,currentTour);
-                    tourAdapter = new TourAdapter(MainActivity.this, tourList);
+//                    tourAdapter = new TourAdapter(MainActivity.this, tourList);
+                    tourAdapter.setTourList(tourList);
                     recyclerViewTourList.setAdapter(tourAdapter);
                     tourAdapter.setOnItemClickListener(new OnItemClickListener() {
                         @Override
@@ -193,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
                     duration.setText("");
                     spinnerVehicle.setSelection(0);
                 }
+                buttonUpdate.setBackgroundColor(Color.parseColor("#FFc1c1c1"));
+                buttonUpdate.setTextColor(Color.parseColor("#FF7a7a7a"));
+                buttonAdd.setBackgroundColor(Color.parseColor("#FF221a4c"));
+                buttonAdd.setTextColor(Color.parseColor("#FFFFFFFF"));
                 isAddOrUpdate = true;
             }
         });
@@ -203,18 +217,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateListItem(int position){
         isAddOrUpdate = false;
+        buttonAdd.setBackgroundColor(Color.parseColor("#FFc1c1c1"));
+        buttonAdd.setTextColor(Color.parseColor("#FF7a7a7a"));
+        buttonUpdate.setBackgroundColor(Color.parseColor("#FF221a4c"));
+        buttonUpdate.setTextColor(Color.parseColor("#FFFFFFFF"));
         updateCurrentIndex = position;
         currentTour = tourList.get(position);
         String[] te = currentTour.getItinerary().split("-");
         from.setText(te[0]);
         to.setText(te[1]);
         duration.setText(currentTour.getDuration());
-        spinnerVehicle.setSelection(0);
+        int x = currentTour.getVehicle().getName()=="Xe máy"?0:currentTour.getVehicle().getName()=="Ô tô"?1:2;
+        spinnerVehicle.setSelection(x);
     }
 
     public void deleteItem(int position){
         tourList.remove(position);
-        tourAdapter = new TourAdapter(this, tourList);
+//        tourAdapter = new TourAdapter(this, tourList);
+        tourAdapter.setTourList(tourList);
         recyclerViewTourList.setAdapter(tourAdapter);
         tourAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -231,6 +251,14 @@ public class MainActivity extends AppCompatActivity {
                 deleteItem(position);
             }
         });
+    }
+
+    void disableKeyBoard(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

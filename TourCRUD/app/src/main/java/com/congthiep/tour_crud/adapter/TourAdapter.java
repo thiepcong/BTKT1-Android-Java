@@ -27,6 +27,14 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
         this.tourList = tourList;
     }
 
+    public TourAdapter(Context context) {
+        this.context = context;
+    }
+
+    public void setTourList(List<Tour> tourList) {
+        this.tourList = tourList;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
